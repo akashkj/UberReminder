@@ -7,8 +7,6 @@ from app import uber_reminder
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-clients = []
-
 
 @app.route('/')
 def main_index():
