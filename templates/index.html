@@ -1,0 +1,117 @@
+  <!DOCTYPE html>	
+  <html>
+    <head>
+		<title>Uber Reminder</title>
+      <!--Import Google Icon Font-->
+      <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	  <style>
+		body {
+			background-image: url("//i.imgur.com/n7Cai2P.jpg");
+		}
+		</style>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+
+				var socket = io.connect('https://' + document.domain + ':' + location.port);
+
+				socket.on('api_logs', function(data) {
+					console.log("got data")
+					$('#result_container').prepend("<br>" + data)
+				});
+
+				$("#remind_btn").click(function(){
+					$("#result").html("")
+					$.post("schedule",
+					{
+					  source_lat: $("#source_lat").val(),
+					  source_long: $("#source_long").val(),
+					  dest_lat: $("#dest_lat").val(),
+					  dest_long: $("#dest_long").val(),
+					  arrival_time: $("#arrival_time").val(),
+					  recipient: $("#recipient").val()
+					},
+					function(response){
+						var response_json = response;
+						errors = response_json.errors;
+						is_valid = response_json.valid;
+						if (is_valid){
+							$("#result").html("Request is registered successfully")
+						} else {
+							var output = "Following errors occured:";
+							output += "<ul>";
+							for (var i in errors) {
+								output += "<li>" + errors[i] + "</li>";
+							}
+							output += "</ul>";
+							$("#result").html(output)
+						}
+					});
+				});
+			});
+		</script>
+    </head>
+
+    <body>
+		<table align="center">
+			<tr>
+				<td>
+					<div class="input-field col s6">
+					  <input id="source_lat" type="text" class="validate">
+					  <label>Source latitude</label>
+					</div>
+				</td>
+				<td>
+					<div class="input-field col s6">
+					  <input id="source_long" type="text" class="validate">
+					  <label>Source longitude</label>
+					</div>
+				</td>
+			<tr>
+				<td>
+					<div class="input-field col s6">
+					  <input id="dest_lat" type="text" class="validate">
+					  <label>Destination latitude</label>
+					</div>
+				</td>
+				<td>
+					<div class="input-field col s6">
+					  <input id="dest_long" type="text" class="validate">
+					  <label>Destination longitude</label>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="input-field col s6">
+					  <input id="arrival_time" type="text" class="validate">
+					  <label>Time of reaching destination</label>
+					</div>
+				</td>
+				<td>
+					<div class="input-field col s6">
+					  <input id="recipient" type="text" class="validate">
+					  <label>Email address</label>
+					</div>
+				</td>
+			</tr>
+			<tr align="center">
+				<td><button type="button" class="btn btn-default" id="remind_btn">Remind Me</button></td>
+			</tr>
+		</table>
+
+		<div id="result"></div>
+		<br>
+		<h3 class="h3-responsive">API requests</h3>
+		<div class="jumbotron" id="result_container"></div>
+		
+        
+      <!--Import jQuery before materialize.js-->
+      <script type="text/javascript" src='//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js'></script>
+    </body>
+  </html>

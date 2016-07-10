@@ -1,0 +1,6 @@
+apscheduler
+flask
+flask-socketio
+gunicorn==18.0.0
+requests
+eventlet
